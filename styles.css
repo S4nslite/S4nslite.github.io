@@ -188,31 +188,74 @@ p {
 
 @media (max-width: 560px) {
   .container {
-    padding: 40px 14px;
+    padding: 36px 12px;
+  }
+
+  h1 {
+    font-size: clamp(1.55rem, 8vw, 2.1rem);
+  }
+
+  h2 {
+    margin-top: 34px;
+    font-size: clamp(1.2rem, 6.5vw, 1.6rem);
   }
 
   .versiculo {
-    padding: 16px;
+    padding: 14px;
+  }
+
+  .pergunta {
+    font-size: 1rem;
+    line-height: 1.45;
+    padding: 0 2px;
   }
 
   .envelope {
-    margin-top: 36px;
-    min-height: 164px;
+    margin-top: 32px;
+    width: 96vw;
+    min-height: 160px;
+    border-radius: 12px;
   }
 
   .envelope::before {
-    height: 84px;
+    height: 80px;
+  }
+
+  .carta {
+    padding: 0 14px;
+    border-radius: 12px;
+  }
+
+  .carta p {
+    padding: 14px 0;
+    font-size: 14px;
+    line-height: 1.52;
   }
 
   .envelope.aberto .carta {
-    max-height: 390px;
+    max-height: 62vh;
   }
 
   .fotos {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .fotos img {
-    min-height: 240px;
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding: 30px 10px;
+  }
+
+  .carta p {
+    font-size: 13px;
+  }
+
+  .fotos img {
+    min-height: 190px;
   }
 }

@@ -1,10 +1,17 @@
 ﻿const musica = document.getElementById("musica");
+const cartaTexto = document.querySelector(".carta p");
 
 const FADE_MS = 4000;
 const TICK_MS = 100;
+const TYPE_SPEED_MS = 22;
 
 let musicaIniciada = false;
 let emFadeOut = false;
+let musicaTocou = false;
+let cartaDigitada = false;
+let timerDigitacao = null;
+
+const textoCompletoCarta = cartaTexto ? cartaTexto.innerHTML.replace(/^\s+/, "") : "";
 
 function fadeVolume(from, to, duration, onDone) {
   const steps = Math.max(1, Math.floor(duration / TICK_MS));
@@ -34,7 +41,7 @@ async function iniciarMusicaSuave() {
     musicaIniciada = true;
     fadeVolume(0, 1, FADE_MS);
   } catch {
-    // Autoplay bloqueado: vai tentar no primeiro gesto do usuário
+    // Autoplay bloqueado: vai tentar no primeiro gesto do usuario
   }
 }
 
@@ -62,16 +69,52 @@ musica.addEventListener("timeupdate", async () => {
   }
 });
 
+function digitarCarta() {
+  if (!cartaTexto || cartaDigitada || !textoCompletoCarta) return;
+
+  cartaTexto.innerHTML = "";
+  let i = 0;
+
+  timerDigitacao = setInterval(() => {
+    if (i >= textoCompletoCarta.length) {
+      clearInterval(timerDigitacao);
+      timerDigitacao = null;
+      cartaDigitada = true;
+      return;
+    }
+
+    if (textoCompletoCarta[i] === "<") {
+      const fimTag = textoCompletoCarta.indexOf(">", i);
+      if (fimTag !== -1) {
+        cartaTexto.innerHTML += textoCompletoCarta.slice(i, fimTag + 1);
+        i = fimTag + 1;
+        return;
+      }
+    }
+
+    cartaTexto.innerHTML += textoCompletoCarta[i];
+    i += 1;
+
+    if (i % 16 === 0) {
+      cartaTexto.parentElement.scrollTop = cartaTexto.parentElement.scrollHeight;
+    }
+  }, TYPE_SPEED_MS);
+}
+
 // Tenta iniciar ao carregar
 window.addEventListener("load", iniciarMusicaSuave);
 
-// Fallback: primeiro gesto do usuário
+// Fallback: primeiro gesto do usuario
 ["click", "touchstart", "keydown"].forEach((evento) => {
   window.addEventListener(evento, iniciarMusicaSuave, { once: true });
 });
 
 function abrirCarta(elemento) {
   elemento.classList.toggle("aberto");
+
+  if (elemento.classList.contains("aberto")) {
+    digitarCarta();
+  }
 
   if (!musicaTocou) {
     musicaTocou = true;
