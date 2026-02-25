@@ -10,6 +10,7 @@ let emFadeOut = false;
 let musicaTocou = false;
 let cartaDigitada = false;
 let timerDigitacao = null;
+let cartaEstaDigitando = false;
 
 const textoCompletoCarta = cartaTexto ? cartaTexto.innerHTML.replace(/^\s+/, "") : "";
 
@@ -70,8 +71,9 @@ musica.addEventListener("timeupdate", async () => {
 });
 
 function digitarCarta() {
-  if (!cartaTexto || cartaDigitada || !textoCompletoCarta) return;
+  if (!cartaTexto || cartaDigitada || cartaEstaDigitando || !textoCompletoCarta) return;
 
+  cartaEstaDigitando = true;
   cartaTexto.innerHTML = "";
   let i = 0;
 
@@ -80,6 +82,7 @@ function digitarCarta() {
       clearInterval(timerDigitacao);
       timerDigitacao = null;
       cartaDigitada = true;
+      cartaEstaDigitando = false;
       return;
     }
 
@@ -101,6 +104,19 @@ function digitarCarta() {
   }, TYPE_SPEED_MS);
 }
 
+function finalizarCartaSemAnimacao() {
+  if (!cartaTexto || cartaDigitada) return;
+
+  if (timerDigitacao) {
+    clearInterval(timerDigitacao);
+    timerDigitacao = null;
+  }
+
+  cartaTexto.innerHTML = textoCompletoCarta;
+  cartaDigitada = true;
+  cartaEstaDigitando = false;
+}
+
 // Tenta iniciar ao carregar
 window.addEventListener("load", iniciarMusicaSuave);
 
@@ -114,6 +130,8 @@ function abrirCarta(elemento) {
 
   if (elemento.classList.contains("aberto")) {
     digitarCarta();
+  } else if (!cartaDigitada) {
+    finalizarCartaSemAnimacao();
   }
 
   if (!musicaTocou) {
