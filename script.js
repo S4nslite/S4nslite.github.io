@@ -1,5 +1,7 @@
 ﻿const musica = document.getElementById("musica");
 const cartaTexto = document.querySelector(".carta p");
+const botaoSurpresa = document.getElementById("btnSurpresa");
+const mensagemSurpresa = document.getElementById("mensagemSurpresa");
 
 const FADE_MS = 4000;
 const TICK_MS = 100;
@@ -173,4 +175,22 @@ function criarFogo() {
   setTimeout(() => {
     fogo.remove();
   }, 1000);
+}
+
+function ativarSurpresaFinal() {
+  if (!mensagemSurpresa) return;
+
+  const jaAtiva = mensagemSurpresa.classList.contains("ativa");
+  mensagemSurpresa.classList.toggle("ativa");
+
+  if (!jaAtiva) {
+    mensagemSurpresa.scrollIntoView({ behavior: "smooth", block: "center" });
+    for (let i = 0; i < 30; i += 1) {
+      criarFogo();
+    }
+  }
+}
+
+if (botaoSurpresa) {
+  botaoSurpresa.addEventListener("click", ativarSurpresaFinal);
 }
