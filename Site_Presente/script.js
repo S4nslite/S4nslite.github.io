@@ -2,10 +2,13 @@
 const cartaTexto = document.querySelector(".carta p");
 const botaoSurpresa = document.getElementById("btnSurpresa");
 const mensagemSurpresa = document.getElementById("mensagemSurpresa");
+const inputAdicionarFotos = document.getElementById("adicionarFotos");
+const galeriaFotos = document.querySelector(".fotos");
 
 const FADE_MS = 4000;
 const TICK_MS = 100;
 const TYPE_SPEED_MS = 22;
+const STORAGE_FOTOS_KEY = "fotosPersonalizadasSitePresente";
 
 let musicaIniciada = false;
 let emFadeOut = false;
@@ -15,6 +18,72 @@ let timerDigitacao = null;
 let cartaEstaDigitando = false;
 
 const textoCompletoCarta = cartaTexto ? cartaTexto.innerHTML.replace(/^\s+/, "") : "";
+
+function obterFotosSalvas() {
+  try {
+    const fotos = JSON.parse(localStorage.getItem(STORAGE_FOTOS_KEY) || "[]");
+    return Array.isArray(fotos) ? fotos : [];
+  } catch {
+    return [];
+  }
+}
+
+function salvarFotos(fotos) {
+  localStorage.setItem(STORAGE_FOTOS_KEY, JSON.stringify(fotos));
+}
+
+function criarImagemGaleria(src, alt) {
+  if (!galeriaFotos) return;
+
+  const imagem = document.createElement("img");
+  imagem.src = src;
+  imagem.alt = alt;
+  imagem.loading = "lazy";
+  galeriaFotos.appendChild(imagem);
+}
+
+function carregarFotosSalvas() {
+  const fotos = obterFotosSalvas();
+  fotos.forEach((foto, index) => {
+    criarImagemGaleria(foto.src, foto.alt || `Nova foto ${index + 1}`);
+  });
+}
+
+function lerArquivoComoDataURL(arquivo) {
+  return new Promise((resolve, reject) => {
+    const leitor = new FileReader();
+    leitor.onload = () => resolve(leitor.result);
+    leitor.onerror = () => reject(new Error("Nao foi possivel ler a imagem."));
+    leitor.readAsDataURL(arquivo);
+  });
+}
+
+async function adicionarNovasFotos(evento) {
+  const arquivos = Array.from(evento.target.files || []).filter((arquivo) =>
+    arquivo.type.startsWith("image/")
+  );
+
+  if (!arquivos.length) return;
+
+  const fotosSalvas = obterFotosSalvas();
+
+  for (const arquivo of arquivos) {
+    try {
+      const src = await lerArquivoComoDataURL(arquivo);
+      const alt = arquivo.name
+        ? `Foto adicionada: ${arquivo.name}`
+        : "Foto adicionada na galeria";
+
+      fotosSalvas.push({ src, alt });
+      criarImagemGaleria(src, alt);
+    } catch {
+      // Ignora somente o arquivo que falhou e continua com os demais.
+    }
+  }
+
+  salvarFotos(fotosSalvas);
+  evento.target.value = "";
+}
 
 function fadeVolume(from, to, duration, onDone) {
   const steps = Math.max(1, Math.floor(duration / TICK_MS));
@@ -121,6 +190,7 @@ function finalizarCartaSemAnimacao() {
 
 // Tenta iniciar ao carregar
 window.addEventListener("load", iniciarMusicaSuave);
+window.addEventListener("load", carregarFotosSalvas);
 
 // Fallback: primeiro gesto do usuario
 ["click", "touchstart", "keydown"].forEach((evento) => {
@@ -193,4 +263,8 @@ function ativarSurpresaFinal() {
 
 if (botaoSurpresa) {
   botaoSurpresa.addEventListener("click", ativarSurpresaFinal);
+}
+
+if (inputAdicionarFotos) {
+  inputAdicionarFotos.addEventListener("change", adicionarNovasFotos);
 }

@@ -59,6 +59,36 @@ p {
   margin-top: 40px;
 }
 
+.galeria-acoes {
+  margin-bottom: 24px;
+}
+
+.btn-adicionar-fotos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.btn-adicionar-fotos:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.12));
+}
+
+.galeria-aviso {
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
 .motivos {
   margin-top: 26px;
   display: grid;
