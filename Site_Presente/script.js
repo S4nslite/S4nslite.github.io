@@ -4,11 +4,19 @@ const botaoSurpresa = document.getElementById("btnSurpresa");
 const mensagemSurpresa = document.getElementById("mensagemSurpresa");
 const inputAdicionarFotos = document.getElementById("adicionarFotos");
 const galeriaFotos = document.querySelector(".fotos");
+const anosJuntos = document.getElementById("anosJuntos");
+const mesesJuntos = document.getElementById("mesesJuntos");
+const diasJuntos = document.getElementById("diasJuntos");
+const horasJuntas = document.getElementById("horasJuntas");
+const minutosJuntos = document.getElementById("minutosJuntos");
+const segundosJuntos = document.getElementById("segundosJuntos");
+const dataInicioRelacionamento = document.getElementById("dataInicioRelacionamento");
 
 const FADE_MS = 4000;
 const TICK_MS = 100;
 const TYPE_SPEED_MS = 22;
 const STORAGE_FOTOS_KEY = "fotosPersonalizadasSitePresente";
+const DATA_INICIO_RELACIONAMENTO = "2025-07-31T00:00:00";
 
 let musicaIniciada = false;
 let emFadeOut = false;
@@ -18,6 +26,67 @@ let timerDigitacao = null;
 let cartaEstaDigitando = false;
 
 const textoCompletoCarta = cartaTexto ? cartaTexto.innerHTML.replace(/^\s+/, "") : "";
+
+function atualizarContadorRelacionamento() {
+  if (
+    !anosJuntos ||
+    !mesesJuntos ||
+    !diasJuntos ||
+    !horasJuntas ||
+    !minutosJuntos ||
+    !segundosJuntos
+  ) {
+    return;
+  }
+
+  const inicio = new Date();
+  const agora = new Date();
+
+  if (Number.isNaN(inicio.getTime()) || agora < inicio) {
+    return;
+  }
+
+  let anos = agora.getFullYear() - inicio.getFullYear();
+  let meses = agora.getMonth() - inicio.getMonth();
+
+  if (agora.getDate() < inicio.getDate()) {
+    meses -= 1;
+  }
+
+  if (meses < 0) {
+    anos -= 1;
+    meses += 12;
+  }
+
+  const baseMeses = new Date(inicio);
+  baseMeses.setFullYear(baseMeses.getFullYear() + anos);
+  baseMeses.setMonth(baseMeses.getMonth() + meses);
+
+  let diferencaMs = agora - baseMeses;
+
+  const dias = Math.floor(diferencaMs / (1000 * 60 * 60 * 24));
+  diferencaMs -= dias * 24 * 60 * 60 * 1000;
+
+  const horas = Math.floor(diferencaMs / (1000 * 60 * 60));
+  diferencaMs -= horas * 60 * 60 * 1000;
+
+  const minutos = Math.floor(diferencaMs / (1000 * 60));
+  diferencaMs -= minutos * 60 * 1000;
+
+  const segundos = Math.floor(diferencaMs / 1000);
+
+  anosJuntos.textContent = String(anos);
+  mesesJuntos.textContent = String(meses);
+  diasJuntos.textContent = String(dias);
+  horasJuntas.textContent = String(horas);
+  minutosJuntos.textContent = String(minutos);
+  segundosJuntos.textContent = String(segundos);
+
+  if (dataInicioRelacionamento) {
+    dataInicioRelacionamento.textContent =
+      "Desde " + inicio.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  }
+}
 
 function obterFotosSalvas() {
   try {
@@ -191,6 +260,9 @@ function finalizarCartaSemAnimacao() {
 // Tenta iniciar ao carregar
 window.addEventListener("load", iniciarMusicaSuave);
 window.addEventListener("load", carregarFotosSalvas);
+window.addEventListener("load", atualizarContadorRelacionamento);
+
+setInterval(atualizarContadorRelacionamento, 1000);
 
 // Fallback: primeiro gesto do usuario
 ["click", "touchstart", "keydown"].forEach((evento) => {
