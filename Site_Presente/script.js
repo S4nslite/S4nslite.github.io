@@ -16,7 +16,7 @@ const FADE_MS = 4000;
 const TICK_MS = 100;
 const TYPE_SPEED_MS = 22;
 const STORAGE_FOTOS_KEY = "fotosPersonalizadasSitePresente";
-const DATA_INICIO_RELACIONAMENTO = "2025-07-31T00:00:00";
+const DATA_INICIO_RELACIONAMENTO = "31/07/2025";
 
 let musicaIniciada = false;
 let emFadeOut = false;
@@ -26,6 +26,16 @@ let timerDigitacao = null;
 let cartaEstaDigitando = false;
 
 const textoCompletoCarta = cartaTexto ? cartaTexto.innerHTML.replace(/^\s+/, "") : "";
+
+function criarDataLocal(dataTexto) {
+  const [dia, mes, ano] = dataTexto.split("/").map(Number);
+
+  if (!dia || !mes || !ano) {
+    return null;
+  }
+
+  return new Date(ano, mes - 1, dia, 0, 0, 0);
+}
 
 function atualizarContadorRelacionamento() {
   if (
@@ -39,10 +49,10 @@ function atualizarContadorRelacionamento() {
     return;
   }
 
-  const inicio = new Date();
+  const inicio = criarDataLocal(DATA_INICIO_RELACIONAMENTO);
   const agora = new Date();
 
-  if (Number.isNaN(inicio.getTime()) || agora < inicio) {
+  if (!inicio || Number.isNaN(inicio.getTime()) || agora < inicio) {
     return;
   }
 
@@ -83,8 +93,7 @@ function atualizarContadorRelacionamento() {
   segundosJuntos.textContent = String(segundos);
 
   if (dataInicioRelacionamento) {
-    dataInicioRelacionamento.textContent =
-      "Desde " + inicio.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+    dataInicioRelacionamento.textContent = "Desde " + DATA_INICIO_RELACIONAMENTO;
   }
 }
 
