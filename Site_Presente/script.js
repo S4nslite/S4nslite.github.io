@@ -53,6 +53,9 @@ function atualizarContadorRelacionamento() {
   const agora = new Date();
 
   if (!inicio || Number.isNaN(inicio.getTime()) || agora < inicio) {
+    if (dataInicioRelacionamento) {
+      dataInicioRelacionamento.textContent = "Desde " + DATA_INICIO_RELACIONAMENTO;
+    }
     return;
   }
 
@@ -271,6 +274,7 @@ window.addEventListener("load", iniciarMusicaSuave);
 window.addEventListener("load", carregarFotosSalvas);
 window.addEventListener("load", atualizarContadorRelacionamento);
 
+atualizarContadorRelacionamento();
 setInterval(atualizarContadorRelacionamento, 1000);
 
 // Fallback: primeiro gesto do usuario
